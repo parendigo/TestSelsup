@@ -1,4 +1,4 @@
-package org.example;
+package org.example.TestSelsup;
 
 import com.google.common.util.concurrent.RateLimiter;
 import org.apache.http.HttpResponse;
@@ -10,12 +10,12 @@ import org.json.JSONObject;
 
 import java.util.concurrent.TimeUnit;
 
-class CrptApi {
+public class CrptApi {
     private final TimeUnit timeUnit;
     private final int requestLimit;
     private final RateLimiter rateLimiter;
 
-    protected CrptApi(TimeUnit timeUnit, int requestLimit) {
+    public CrptApi(TimeUnit timeUnit, int requestLimit) {
         this.timeUnit = timeUnit;
         this.requestLimit = requestLimit;
         this.rateLimiter = RateLimiter.create((double)requestLimit / timeUnit.toSeconds(1));
@@ -31,6 +31,7 @@ class CrptApi {
             httpPost.addHeader(name, "application/json");
             httpPost.setEntity(entity);
             HttpResponse response = httpClient.execute(httpPost);
+            System.out.println(response.toString());
         } catch (Exception eIgnored) {
         }
     }
