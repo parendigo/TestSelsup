@@ -19,13 +19,15 @@ import java.util.concurrent.TimeUnit;
 @SuppressWarnings("SpellCheckingInspection")
 public class CrptApi {
     private final long timeAmountMillis; // total refresh time
-    private ListCallNode head; // List contains previous method calls
-    private ListCallNode tail; // helps to add to the end of the List
-    private final int refreshRate = 10; // used to define frequency with which the List will be refreshed
     private final int requestLimit;
     private final Semaphore semaphore; // contains requestLimit
 
-    private final String DefaultUrl = "https://ismp.crpt.ru/api/v3/lk/documents/create";
+    private ListCallNode head; // List contains previous method calls
+    private ListCallNode tail; // helps to add to the end of the List
+
+    private static final int refreshRate = 10; // used to define frequency with which the List will be refreshed
+
+    private static final String DEFAULT_URL = "https://ismp.crpt.ru/api/v3/lk/documents/create";
     /*private final String DefaultUrl = "http://localhost:8080/test";*/
 
     public CrptApi(int requestLimit, TimeUnit timeUnit) {
@@ -66,17 +68,15 @@ public class CrptApi {
 
     private synchronized void addNewCallNode() {
         ListCallNode lcn = new ListCallNode(System.currentTimeMillis());
-        if (head == null) {
+        if (head == null)
             head = lcn;
-            tail = lcn;
-        } else {
+        else
             tail.next = lcn;
-            tail = lcn;
-        }
+        tail = lcn;
     }
 
     //  Contains nodes of recent method calls. Recent calls are added to the end
-    private class ListCallNode {
+    private static class ListCallNode {
         long callTime;
         ListCallNode next;
 
@@ -88,7 +88,7 @@ public class CrptApi {
     private <T> String sendJson(T json, String signature) {
         try (CloseableHttpClient client = HttpClients.createDefault()) {
 
-            HttpPost httpPost = new HttpPost(DefaultUrl);
+            HttpPost httpPost = new HttpPost(DEFAULT_URL);
             httpPost.setHeader("Content-Type", "application/json");
             httpPost.setHeader("Accept", "application/json");
             httpPost.setHeader("Authorization", "Bearer " + signature);
